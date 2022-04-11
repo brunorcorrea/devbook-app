@@ -8,6 +8,8 @@ import (
 
 func JSON(w http.ResponseWriter, statusCode int, dados interface{}) {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, HEAD, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:1234")
 
 	w.WriteHeader(statusCode)
 
