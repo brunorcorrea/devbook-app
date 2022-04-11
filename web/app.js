@@ -1,17 +1,17 @@
 import 'regenerator-runtime/runtime';
 import axios from 'axios';
-
+import 'dotenv/config';
 
 const instance = axios.create({
-    baseURL: 'https://2779-167-249-240-246.ngrok.io/',
-    timeout: 2000,
+    baseURL: `http://localhost:${process.env.API_PORT}`,
+    timeout: 2000
   });
 
 async function getUsers(){
     try {
         const response = await instance.get('/usuarios', {
             params: {
-                usuario : "b"
+                usuario : "j"
             }})
         handleResponse(response)
     }
