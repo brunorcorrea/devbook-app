@@ -110,10 +110,10 @@ func (repositorio usuarios) BuscarPorEmail(email string) (models.Usuario, error)
 		}
 	}
 
-	return usuario,nil
+	return usuario, nil
 }
 
-func(repositorio usuarios) Atualizar(ID uint64, usuario models.Usuario) error {
+func (repositorio usuarios) Atualizar(ID uint64, usuario models.Usuario) error {
 	statement, erro := repositorio.db.Prepare("UPDATE usuarios SET nome = ?, nick = ?, email = ? WHERE id = ?")
 	if erro != nil {
 		return erro
@@ -138,5 +138,18 @@ func (repositorio usuarios) Deletar(ID uint64) error {
 		return erro
 	}
 
+	return nil
+}
+
+func (repositorio usuarios) Seguir(usuarioID, seguidorID uint64) error {
+	statement, erro := repositorio.db.Prepare("INSERT IGNORE INTO seguidores (usuario_id, seguidor_id) VALUES (?, ?);")
+	if erro != nil {
+		return erro
+	}
+	defer statement.Close()
+
+	if _, erro = statement.Exec(usuarioID, seguidorID); erro != nil {
+		return erro
+	}
 	return nil
 }
