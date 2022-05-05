@@ -6,16 +6,16 @@ import (
 	"fmt"
 	"net/http"
 	"webapp/src/config"
-	"webapp/src/cookies"
-	"webapp/src/models"
 	"webapp/src/responses"
 )
 
-func FazerLogin(w http.ResponseWriter, r *http.Request) {
+func CriarUsuario(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
 	usuario, erro := json.Marshal(map[string]string{
+		"nome":  r.FormValue("nome"),
 		"email": r.FormValue("email"),
+		"nick":  r.FormValue("nick"),
 		"senha": r.FormValue("senha"),
 	})
 	if erro != nil {
@@ -23,7 +23,7 @@ func FazerLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	url := fmt.Sprintf("%s/login", config.ApiUrl)
+	url := fmt.Sprintf("%s/usuarios", config.ApiUrl)
 	response, erro := http.Post(url, "application/json", bytes.NewBuffer(usuario))
 	if erro != nil {
 		responses.JSON(w, http.StatusInternalServerError, responses.ErroAPI{Erro: erro.Error()})
@@ -36,16 +36,5 @@ func FazerLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var dadosAutenticacao models.DadosAutenticacao
-	if erro := json.NewDecoder(response.Body).Decode(&dadosAutenticacao); erro != nil {
-		responses.JSON(w, http.StatusUnprocessableEntity, responses.ErroAPI{Erro: erro.Error()})
-		return
-	}
-
-	if erro = cookies.Salvar(w, dadosAutenticacao.ID, dadosAutenticacao.Token); erro != nil {
-		responses.JSON(w, http.StatusUnprocessableEntity, responses.ErroAPI{Erro: erro.Error()})
-		return
-	}
-
-	responses.JSON(w, http.StatusOK, nil)
+	responses.JSON(w, response.StatusCode, nil)
 }
