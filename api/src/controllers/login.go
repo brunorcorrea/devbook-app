@@ -9,9 +9,9 @@ import (
 	"api/src/seguranca"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 )
 
 func Login(w http.ResponseWriter, r *http.Request) {
@@ -49,10 +49,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	token, erro := autenticacao.CriarToken(usuarioSalvoNoBanco.ID)
 	if erro != nil {
-
+		responses.Erro(w, http.StatusInternalServerError, erro)
+		return
 	}
 
-	fmt.Println(token)
+	usuarioID := strconv.FormatUint(usuarioSalvoNoBanco.ID, 10)
 
-	w.Write([]byte(token))
+	responses.JSON(w, http.StatusOK, models.DadosAutenticacao{ID: usuarioID, Token: token})
 }
